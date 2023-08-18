@@ -95,12 +95,16 @@ class CTSM_control:
         # -- Get monthly data:
         lst4spinup = []
         for i,path in enumerate(paths):
-            # -- Open dataset:
-            ds = xr.open_dataset(path)
-            # -- Correct time axis and area:
-            ds_cor = sys_help.convert_ctsm_time(ds)
-            # -- Select research variable:
-            lst4spinup.append(ds_cor[[param, var_area]])
+            try:
+                # -- Open dataset:
+                ds = xr.open_dataset(path)
+                # -- Correct time axis and area:
+                ds_cor = sys_help.convert_ctsm_time(ds)
+                # -- Select research variable:
+                lst4spinup.append(ds_cor[[param, var_area]])
+            except:
+                print(f'no data: {path}')
+
         # -- Time merge:
         ds_param = xr.concat(lst4spinup, dim = 'time')
         #print(ds_param.time)
@@ -161,11 +165,11 @@ separator = '/'
 #ctsm_exp = ['SPINUP_020', 'SPINUP_200', 'SPINUP_900', 'spinup_BGI_GSWP3_002' ]
 #ctsm_pref = ['sim1', 'sim2', 'sim3', 'sim4']
 
-#ctsm_exp = ['spinup_BGI_005', 'spinup_BGI_GSWP3_002' ]
-#ctsm_pref = ['sim3', 'sim4']
+ctsm_exp = ['spinup_BGI_005', 'spinup_BGI_GSWP3_002' ]
+ctsm_pref = ['sim3', 'sim4']
 
-ctsm_exp = ['spinup_BGI_005']
-ctsm_pref = ['sim3']
+#ctsm_exp = ['spinup_BGI_005']
+#ctsm_pref = ['sim3']
 
 # -- Time settings:
 tsets = {
@@ -191,9 +195,9 @@ ssets = {
 #col = ['r'  , 'b'  , 'g'   , 'black'],
 #ln  = ['-', '-.','-', '-'],
 
-leg = ['myForcing']# ,'gswp']
-col = ['g'   ]#, 'black']
-ln =  ['-']#, '-']
+leg = ['myForcing' ,'gswp']
+col = ['g'   , 'black']
+ln =  ['-', '-']
 
 # -- User settings for GPP plot:
 set4gpp_plot = {
@@ -251,7 +255,7 @@ if __name__ == '__main__':
                 print('Use original units')
             # Create lists with data:
             lst4maps.append(m_param)
-            #lst4ts.append(ts_param)
+            #lst4ts.append(pd.Series(ts_param.values))
             ts_test = ts_param.values
             ts_test = np.insert(ts_test, 0, 0., axis=0)
             lst4ts.append(pd.Series(ts_test))
